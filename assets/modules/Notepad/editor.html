@@ -1,0 +1,351 @@
+<!doctype html>
+<!-- See http://www.firepad.io/docs/ for detailed embedding docs. -->
+<html>
+<head>
+  <meta charset="utf-8" />
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/5.7.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.7.2/firebase-database.js"></script>
+  <!-- CodeMirror -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.17.0/codemirror.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.17.0/codemirror.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.17.0/theme/tomorrow-night-bright.css" />
+
+  <script src="https://codemirror.net/keymap/vim.js"></script>
+
+
+  <!-- Firepad -->
+  <link rel="stylesheet" href="https://cdn.firebase.com/libs/firepad/1.4.0/firepad.css" />
+  <!-- Firepad 1.4.0 customized color black -> white -->
+  <script src="./firepad.min.js"></script>
+
+  <style>
+    @font-face {
+      font-family: Roboto;
+      src: url('../../fonts/Roboto-Regular.ttf');
+    }
+
+    @font-face {
+      font-family: CustomIcons;
+      src: url('./fonts/icons.ttf');
+    }
+
+    html {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      height: 100%;
+      position: relative;
+    }
+
+    /* Height / width / positioning can be customized for your use case.
+       For demo purposes, we make firepad fill the entire browser. */
+    .cm-s-tomorrow-night-bright div.CodeMirror-selected {
+      background: #575757;
+    }
+
+    .cm-s-tomorrow-night-bright .CodeMirror-cursor {
+      border-left: 1px solid #eaeaea;
+    }
+
+    .firepad-with-toolbar .CodeMirror {
+      background-color: #333333;
+    }
+
+    #firepad-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    a.powered-by-firepad {
+      display: none;
+    }
+
+    /* TODO integrate with theme colors */
+    /* customize toolbar  **/
+    .firepad-with-toolbar .CodeMirror {
+      top: 40px;
+    }
+
+    .firepad-toolbar {
+      font-family: Roboto;
+      padding: 0;
+      height: 40px;
+      line-height: inherit;
+      background-color: #575757;
+    }
+
+    .firepad-toolbar-wrapper {
+      height: 100%;
+    }
+
+    .firepad-btn-group {
+      margin: 0;
+      height: 100%;
+    }
+
+    .firepad-btn-group {
+      border-right: 1px solid rgba(171,171,171,0.1);
+      padding: 5px;
+    }
+
+    .firepad-btn-group > .firepad-btn {
+      background-color: inherit;
+      border: 0 !important;
+      border-radius: 0 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      line-height: 28px;
+    }
+
+    a.firepad-btn {
+      margin: 0 4px;
+      padding-left: 10px !important;
+      padding-right: 10px !important;
+      font-size: 14px !important;
+      box-sizing: border-box;
+      color: #d8d8d8 !important;
+    }
+
+    a.firepad-btn:hover, .firepad-dropdown-menu a:hover {
+      background-color: #333333;
+    }
+
+    .firepad-tb-bold, .firepad-tb-italic, .firepad-tb-underline, .firepad-tb-strikethrough, .firepad-tb-list, .firepad-tb-list-2, .firepad-tb-numbered-list, .firepad-tb-paragraph-left, .firepad-tb-paragraph-center, .firepad-tb-paragraph-right, .firepad-tb-paragraph-justify, .firepad-tb-menu, .firepad-tb-link, .firepad-tb-undo, .firepad-tb-redo, .firepad-tb-box-add, .firepad-tb-box-remove, .firepad-tb-print, .firepad-tb-indent-decrease, .firepad-tb-indent-increase, .firepad-tb-insert-image, .firepad-tb-bubble {
+      line-height: inherit !important;
+    }
+
+    .firepad-dropdown-menu {
+      margin: 0;
+      border-radius: 2px;
+      box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.15);
+      background-color: #575757;
+      left: 7px;
+    }
+
+    .firepad-dropdown-menu a {
+      color: #d8d8d8;
+    }
+
+    /* color picker */
+    .firepad-btn-group:nth-child(3) > .firepad-btn > .firepad-dropdown-menu {
+      color: red;
+      width: 220px;
+
+    }
+
+    .firepad-btn-group:nth-child(3) > .firepad-btn > .firepad-dropdown-menu > a {
+      clear: none;
+      float: left;
+    }
+
+    .firepad-btn-group:nth-child(3) > .firepad-btn > .firepad-dropdown-menu > a > div {
+      border-radius: 50%;
+    }
+    /* img url */
+    .firepad-dialog-div {
+      margin-top: 90px;
+      width: 460px;
+      height: 60px;
+      background-color: #575757;
+      font-family: Roboto;
+      padding: 0;
+    }
+
+    .firepad-dialog-input {
+      margin: 15px 15px 15px 20px;
+      display: inline-block;
+      width: 260px;
+      border: 1px solid #979797;
+      background-color: #575757;
+      color: #d8d8d8;
+      font-size: 14px;
+      outline: none;
+      padding: 0 5px;
+      line-height: 30px;
+    }
+
+    .firepad-dialog-input:focus {
+      border-color: #2bce72;
+    }
+
+    .firepad-dialog-input::placeholder {
+      color: #d8d8d8;
+    }
+
+    .firepad-dialog-input + div {
+      display: inline-flex;
+      border-right: 0;
+      border-left: 1px solid rgba(171,171,171,0.1);
+      vertical-align: top;
+      box-sizing: border-box;
+      align-items: center;
+      justify-content: space-around;
+      width: 150px;
+    }
+
+    .firepad-dialog-input + div > a {
+      text-transform: uppercase;
+    }
+
+    .firepad-dialog-input + div > a:nth-child(1) {
+      color: #2bce72 !important;
+    }
+
+    /* custom icons */
+    .firepad-tb-list-2:before {
+      font-family: CustomIcons;
+      content: '\e90a';
+    }
+    .firepad-tb-numbered-list:before {
+      font-family: CustomIcons;
+      content: '\e908';
+    }
+    .firepad-tb-list:before {
+      font-family: CustomIcons;
+      content: '\e909';
+    }
+    .firepad-tb-indent-decrease:before {
+      font-family: CustomIcons;
+      content: '\e907';
+    }
+    .firepad-tb-indent-increase:before {
+      font-family: CustomIcons;
+      content: '\e906';
+    }
+    .firepad-tb-paragraph-left:before {
+      font-family: CustomIcons;
+      content: '\e905';
+    }
+    .firepad-tb-paragraph-center:before {
+      font-family: CustomIcons;
+      content: '\e900';
+    }
+    .firepad-tb-paragraph-right:before {
+      font-family: CustomIcons;
+      content: '\e904';
+    }
+    .firepad-tb-undo:before {
+      font-family: CustomIcons;
+      content: '\e903';
+      font-size: 8px;
+      top: -2px;
+      position: relative;
+    }
+    .firepad-tb-redo:before {
+      font-family: CustomIcons;
+      content: '\e902';
+      font-size: 8px;
+      top: -2px;
+      position: relative;
+    }
+    .firepad-tb-insert-image:before {
+      font-family: CustomIcons;
+      content: '\e901';
+    }
+    .firepad-tb-strikethrough {
+      font-size: 15px;
+    }
+    .firepad-tb-underline:before {
+      font-family: CustomIcons;
+      content: '\e90b';
+    }
+    .firepad-tb-italic:before {
+      font-family: CustomIcons;
+      content: '\e90c';
+    }
+    .firepad-tb-bold:before {
+      font-family: CustomIcons;
+      content: '\e90d';
+    }
+  </style>
+</head>
+
+<body onload="init()">
+<div id="firepad-container"></div>
+
+<script>
+  // Firebase link
+    // https://console.firebase.google.com/u/1/project/set2meet-notepad/overview
+    // owners: chrome-web-store@competentum.ru
+
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyDZpkfcPYlaaNFGA9XTFMagMEcRawgWK0I",
+      authDomain: "set2meet-notepad.firebaseapp.com",
+      databaseURL: "https://set2meet-notepad.firebaseio.com",
+      projectId: "set2meet-notepad",
+      storageBucket: "set2meet-notepad.appspot.com",
+      messagingSenderId: "667155896667"
+    };
+  firebase.initializeApp(config);
+</script>
+
+<script>
+  function init() {
+    //// Get Firebase Database reference.
+    var firepadRef = getExampleRef();
+
+    //// Create CodeMirror (with lineWrapping on).
+    CodeMirror.Vim.suppressErrorLogging = true;
+    var codeMirror = CodeMirror(document.getElementById('firepad-container'), {
+      lineWrapping: true,
+      theme: 'tomorrow-night-bright'
+    });
+    //// Create Firepad (with rich text toolbar and shortcuts enabled).
+    var firepad = Firepad.fromCodeMirror(firepadRef, codeMirror,
+      {
+        richTextToolbar: true,
+        richTextShortcuts: true
+      });
+    //// Initialize contents.
+
+    firepad.on('ready', function() {
+      if (firepad.isHistoryEmpty()) {
+        firepad.setHtml(
+          '<span style="font-size: 18px;">Introducing rich text editing with Set2Meet</span></span><br/>\n' +
+          '<br/>' +
+          '<div style="font-size: 14px">' +
+          'Supported features:<br/><br/>' +
+          '<ul>' +
+          '<li>Different fonts, sizes and colors</li>' +
+          '<li>Bold, italic, underline, strikethrough</li>' +
+          '<li>Lists' +
+          '<ul>' +
+          '<li><span style="font-size: 14px">numeric</span>'+
+          '<li><span style="font-size: 14px">bullet</span>'+
+          '<li><span style="font-size: 14px">multi-level</span>'+
+          '</ul>' +
+          '</li>' +
+          '<li>Undo / redo</li>' +
+          '<li>Image insert</li>' +
+          '<li>Cursor / selection synchronization</li>' +
+
+          '</ul>' +
+          '<br/>And it\'s fully collaborative!<br/><br/><br/>' +
+          '<img src="./White%20Logo_small.png"/>' +
+          '</div>');
+      }
+    });
+  }
+
+  // Helper to get hash from end of URL or generate a random one.
+  function getExampleRef() {
+    var ref = firebase.database().ref();
+    var hash = window.location.hash.replace(/#/g, '');
+    if (hash) {
+      ref = ref.child(hash);
+    } else {
+      ref = ref.push(); // generate unique location.
+      window.location = window.location + '#' + ref.key; // add it as a hash to the URL.
+    }
+    /*    if (typeof console !== 'undefined') {
+          console.log('Firebase data: ', ref.toString());
+        }*/
+    return ref;
+  }
+</script>
+</body>
+</html>
